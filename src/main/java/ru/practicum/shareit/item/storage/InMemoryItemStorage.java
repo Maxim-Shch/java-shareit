@@ -44,7 +44,7 @@ public class InMemoryItemStorage implements ItemStorage {
         if (item.getDescription() != null) {
             updatedItem.setDescription(item.getDescription());
         }
-        if (item.getAvailable()!= null && !item.getAvailable().equals(updatedItem.getAvailable())) {
+        if (item.getAvailable() != null && !item.getAvailable().equals(updatedItem.getAvailable())) {
             updatedItem.setAvailable(item.getAvailable());
         }
         items.put(itemId, updatedItem);

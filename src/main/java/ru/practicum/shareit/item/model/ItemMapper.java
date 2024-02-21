@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 import ru.practicum.shareit.item.dto.ItemDto;
+
 @Data
 public class ItemMapper {
 
