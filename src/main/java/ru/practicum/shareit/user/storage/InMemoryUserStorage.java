@@ -47,8 +47,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User findById(Long id) {
-        if (users.containsKey(id)) {
-            return users.get(id);
+        User user = users.get(id);
+        if (user != null) {
+            return user;
         } else {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден.", id));
         }
@@ -56,7 +57,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void deleteUser(Long userId) {
-        if (users.containsKey(userId)) {
+        User user = users.get(userId);
+        if (user != null) {
             users.remove(userId);
         } else {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден.", userId));
@@ -66,7 +68,7 @@ public class InMemoryUserStorage implements UserStorage {
     private void validateEmail(String email) throws ValidationException {
         for (User user : users.values()) {
             if (user.getEmail().equals(email)) {
-                throw new ValidationException("Такой email пользователя уже существует");
+                throw new ValidationException("Такой email " + email + " уже занят пользователем id " + user.getId());
             }
         }
     }

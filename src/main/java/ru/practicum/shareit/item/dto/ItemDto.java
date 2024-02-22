@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -23,7 +22,7 @@ public class ItemDto {
     private String description; //развёрнутое описание;
     @NotNull
     private Boolean available; //статус о том, доступна или нет вещь для аренды;
-    private User owner; //владелец вещи;
-    //если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
-    private Integer requestId;
+    private Integer ownerId; //владелец вещи;
+    private Integer requestId; //если вещь была создана по запросу другого пользователя,
+    // то в этом поле будет храниться ссылка на соответствующий запрос.
 }

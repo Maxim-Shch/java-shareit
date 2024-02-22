@@ -53,8 +53,9 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item getItemById(Long itemId) {
-        if (items.containsKey(itemId)) {
-            return items.get(itemId);
+        Item item = items.get(itemId);
+        if (item != null) {
+            return item;
         } else {
             throw new NotFoundException(String.format("Вещь с id = %d не найдена", itemId));
         }

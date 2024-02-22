@@ -38,7 +38,6 @@ public class UserController {
 
     @GetMapping
     public Collection<UserDto> getAllUsers() {
-        //log.info("Получаем пользователя по ID: {}", userId );
         return userService.findAll();
     }
 
