@@ -68,7 +68,7 @@ public class InMemoryUserStorage implements UserStorage {
     private void validateEmail(String email) throws ValidationException {
         for (User user : users.values()) {
             if (user.getEmail().equals(email)) {
-                throw new ValidationException("Такой email " + email + " уже занят пользователем id " + user.getId());
+                throw new ValidationException("Такой email " + email + " уже занят. ");
             }
         }
     }
