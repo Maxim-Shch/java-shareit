@@ -31,7 +31,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User updateUser(Long userId, User user) throws ValidationException {
         User updatedUser = findById(userId);
-
         if (user.getName() != null) {
             updatedUser.setName(user.getName());
         }

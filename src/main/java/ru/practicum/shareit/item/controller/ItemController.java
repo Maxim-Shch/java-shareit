@@ -3,7 +3,12 @@ package ru.practicum.shareit.item.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.CommentRequestException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentShortDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -16,10 +21,12 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CommentService commentService;
 
     @Autowired //данная аннотация автоматически связывает бины (компоненты)
-    public ItemController(ItemService itemService) {
+    public ItemController(ItemService itemService, CommentService commentService) {
         this.itemService = itemService;
+        this.commentService = commentService;
     }
 
     //POST /items - добавление новой вещи пользователем
@@ -33,16 +40,17 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                               @PathVariable("itemId") Long itemId,
-                              @RequestBody ItemDto itemDto) {
+                              @RequestBody ItemUpdateDto itemDto) {
         log.info("Редактирование вещи по ID: {}", itemId);
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
     //GET /items/{itemId} - Просмотр информации о конкретной вещи по её идентификатору
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable("itemId") Long itemId) {
+    public ItemDto getItemById(@PathVariable("itemId") Long itemId,
+                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Просмотр информации о конкретной вещи по её ID: {}", itemId);
-        return itemService.getItemById(itemId);
+        return itemService.getItemById(itemId, userId);
     }
 
     //GET /items - Просмотр владельцем списка всех его вещей с указанием названия и описания для каждой
@@ -62,5 +70,15 @@ public class ItemController {
         } else {
             return itemService.searchItems(userId, text);
         }
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createItemComment(@RequestBody final CommentShortDto commentShortDto,
+                                        @PathVariable final Long itemId,
+                                        @RequestHeader("X-Sharer-User-Id") Long userId) {
+        if (commentShortDto.getText().isBlank()) {
+            throw new CommentRequestException("Текст комментария не может быть пустым");
+        }
+        return commentService.addNewComment(commentShortDto, itemId, userId);
     }
 }

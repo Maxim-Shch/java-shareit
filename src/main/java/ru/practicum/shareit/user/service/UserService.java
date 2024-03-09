@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface UserService {
     UserDto createUser(UserDto userDto) throws ValidationException;
 
-    UserDto getUserId(Long userId);
+    UserDto getUserById(Long userId);
 
     UserDto updateUser(Long userId, UserDto userDto) throws ValidationException;
 
