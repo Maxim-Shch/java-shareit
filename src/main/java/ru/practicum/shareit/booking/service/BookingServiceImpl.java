@@ -37,6 +37,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDtoOut createBooking(Long userId, BookingDtoIn bookingDtoIn) {
+        validateBookingTime(bookingDtoIn.getStart(), bookingDtoIn.getEnd());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         Item item = itemRepository.findById(bookingDtoIn.getItemId())
@@ -48,7 +49,6 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("Нелья сделать бронирование на собственную вещь");
         }
         Booking booking = BookingMapper.toBooking(bookingDtoIn, user, item);
-        validateBookingTime(booking);
         bookingRepository.save(booking);
         return BookingMapper.toBookingDtoOut(booking);
     }
@@ -89,7 +89,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Collection<BookingDtoOut> getAllBookingsByUser(Long userId, String state) {
         StateOfBookingRequest stateIn = getState(state);
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с id: " + userId));
         List<Booking> userBookings = bookingRepository.findByBooker(user);
         log.info("Список всех бронирований со статусом {} пользователя с id={} успешно получен", state, userId);
         return getBookingsByState(userBookings, stateIn)
@@ -99,7 +100,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Collection<BookingDtoOut> getBookingsForUserItems(Long userId, String state) {
         StateOfBookingRequest stateIn = getState(state);
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new NotFoundException("Пользователь не найден с id: " + userId));
         List<Booking> userBookings = bookingRepository.findByItem_Owner(user);
         log.info("Список бронирований со статусом {} для вещей пользователя с id={} успешно получен", state, userId);
         return getBookingsByState(userBookings, stateIn).stream()
@@ -139,8 +141,8 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateBookingTime(Booking booking) {
-        if (booking.getEnd().isBefore(booking.getStart()) || booking.getStart().equals(booking.getEnd())) {
+    private void validateBookingTime(LocalDateTime start, LocalDateTime end) {
+        if (end.isBefore(start) || start.equals(end)) {
             throw new BookingValidationException("Wrong booking time");
         }
     }
