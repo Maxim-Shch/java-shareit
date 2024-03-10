@@ -100,8 +100,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Collection<BookingDtoOut> getBookingsForUserItems(Long userId, String state) {
         StateOfBookingRequest stateIn = getState(state);
-        User user = userRepository.findById(userId).
-                orElseThrow(() -> new NotFoundException("Пользователь не найден с id: " + userId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с id: " + userId));
         List<Booking> userBookings = bookingRepository.findByItem_Owner(user);
         log.info("Список бронирований со статусом {} для вещей пользователя с id={} успешно получен", state, userId);
         return getBookingsByState(userBookings, stateIn).stream()
