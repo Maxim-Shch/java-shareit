@@ -37,7 +37,6 @@ public class InMemoryItemStorage implements ItemStorage {
         if (!updatedItem.getOwner().equals(user)) {
             throw new AccessException("Только владелец может обновить вещь!");
         }
-
         if (item.getName() != null) {
             updatedItem.setName(item.getName());
         }
