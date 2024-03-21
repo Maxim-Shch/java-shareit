@@ -18,12 +18,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("Ошибка валидации данных", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleAccessException(final AccessException e) {
         return Map.of("Нет прав доступа", e.getMessage());

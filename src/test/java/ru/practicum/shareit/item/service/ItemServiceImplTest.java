@@ -147,7 +147,8 @@ public class ItemServiceImplTest {
                 .owner(user).build();
         List<Comment> comments = new ArrayList<>();
 
-        Booking bookingOne = Booking.builder().id(1L).start(LocalDateTime.now()).end(LocalDateTime.now().plusHours(2))
+        Booking bookingOne = Booking.builder().id(1L).start(LocalDateTime.now().plusHours(1))
+                .end(LocalDateTime.now().plusHours(2))
                 .item(item).booker(booker).status(BookingStatus.APPROVED).build();
         Booking bookingTwo = Booking.builder().id(2L).start(LocalDateTime.now().plusHours(3))
                 .end(LocalDateTime.now().plusHours(5))
@@ -164,6 +165,7 @@ public class ItemServiceImplTest {
         ItemDto actualItemDto = itemService.getItemById(item.getId(), user.getId());
 
         assertEquals(expectedItemDto, actualItemDto);
+
         verify(itemRepository).findById(item.getId());
         verify(commentRepository).findByItemOrderByIdAsc(item);
         verify(bookingRepository).findByItem(item);
