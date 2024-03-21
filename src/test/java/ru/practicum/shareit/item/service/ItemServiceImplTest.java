@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -23,6 +24,7 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
@@ -31,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
 public class ItemServiceImplTest {
+
     @Mock
     ItemRepository itemRepository;
     @Mock
@@ -45,6 +48,7 @@ public class ItemServiceImplTest {
     ItemServiceImpl itemService;
 
     private final User user = new User(1L, "user", "user@mail.ru");
+    private final User booker = new User(2L, "user2", "user2@mail.ru");
     private final ItemDto itemDto = ItemDto.builder().id(1L).name("itemName").description("itemDesc")
             .available(true).requestId(1L).build();
     private final ItemRequest request = ItemRequest.builder().id(itemDto.getRequestId()).description("req desc")
@@ -142,7 +146,14 @@ public class ItemServiceImplTest {
         Item item = Item.builder().id(1L).name("item2Name").description("item2Desc").available(true)
                 .owner(user).build();
         List<Comment> comments = new ArrayList<>();
-        List<Booking> bookings = new ArrayList<>();
+
+        Booking bookingOne = Booking.builder().id(1L).start(LocalDateTime.now()).end(LocalDateTime.now().plusHours(2))
+                .item(item).booker(booker).status(BookingStatus.APPROVED).build();
+        Booking bookingTwo = Booking.builder().id(2L).start(LocalDateTime.now().plusHours(3))
+                .end(LocalDateTime.now().plusHours(5))
+                .item(item).booker(booker).status(BookingStatus.WAITING).build();
+
+        List<Booking> bookings = List.of(bookingOne, bookingTwo);
 
         ItemDto expectedItemDto = ItemMapper.toItemDto(item, comments, bookings);
 
