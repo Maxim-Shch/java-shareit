@@ -53,6 +53,7 @@ public class BookingController {
         if (from < 0 || size < 0) {
             throw new BadRequestException("Значение from и size не могут быть меньше 0");
         }
+
         return bookingService.getAllBookingsByUser(userId, state, from, size);
     }
 
