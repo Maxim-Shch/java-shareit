@@ -6,6 +6,7 @@ import javax.xml.bind.ValidationException;
 import java.util.Collection;
 
 public interface UserStorage {
+
     Collection<User> findAll();
 
     User createUser(User user) throws ValidationException;

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -44,7 +45,7 @@ public class UserController {
     //Обновляем данные пользователя
     @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable("userId") Long userId,
-                              @RequestBody UserDto userDto) throws ValidationException {
+                              @RequestBody @Valid UserUpdateDto userDto) throws ValidationException {
         log.info("Обновляем данные пользователя по ID: {}", userId);
         return userService.updateUser(userId, userDto);
     }

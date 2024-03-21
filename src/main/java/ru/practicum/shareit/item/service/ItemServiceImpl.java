@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -15,6 +17,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -33,14 +37,15 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
     @Override
     @Transactional
     public ItemDto updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
         User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item updatedItem = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item not found"));
+                .orElseThrow(() -> new NotFoundException("Товар не найден"));
         if (!updatedItem.getOwner().equals(owner)) {
             throw new AccessException("Только владелец может обновить вещь!");
         }
@@ -61,8 +66,13 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto addItem(Long userId, ItemDto itemDto) {
         User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = ItemMapper.toItem(itemDto, owner);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest request = requestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                    new NotFoundException(String.format("Запрос с id=%d не найден", item.getRequest().getId())));
+            item.setRequest(request);
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -80,10 +90,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItemsByOwnerId(Long userId) {
+    public List<ItemDto> getAllItemsByOwnerId(Long userId, Integer from, Integer size) {
         User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        List<Item> userItems = itemRepository.findByOwner(owner);
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        PageRequest page = PageRequest.of(from / size, size);
+        List<Item> userItems = itemRepository.findByOwner(owner, page);
         return userItems.stream().map(item ->
                         ItemMapper.toItemDto(item, commentRepository.findByItemOrderByIdAsc(item),
                                 bookingRepository.findByItem(item)))
@@ -91,11 +102,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(Long userId, String text) {
-        return itemRepository.search(text).stream()
+    public List<ItemDto> searchItems(Long userId, String text, Integer from, Integer size) {
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("name").ascending());
+        return itemRepository.search(text, page).stream()
                 .filter(item -> item.getAvailable().equals(true))
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteItem(Long itemId) {
+        itemRepository.deleteById(itemId);
     }
 
     @Override

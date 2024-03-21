@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.CommentRequestException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentShortDto;
@@ -55,20 +56,37 @@ public class ItemController {
 
     //GET /items - Просмотр владельцем списка всех его вещей с указанием названия и описания для каждой
     @GetMapping
-    public List<ItemDto> getAllItemsByOwnerId(@RequestHeader ("X-Sharer-User-Id") Long userId) {
+    public List<ItemDto> getAllItemsByOwnerId(@RequestHeader ("X-Sharer-User-Id") Long userId,
+                                              @RequestParam(value = "from", required = false, defaultValue = "0")
+                                              final Integer from,
+                                              @RequestParam(value = "size", required = false, defaultValue = "10")
+                                              final Integer size) {
+        if (from < 0 || size < 0) {
+            throw new BadRequestException("Значение from и size не могут быть меньше 0");
+        }
+
         log.info("Просмотр владельцем списка всех его вещей с указанием названия и описания для каждой: {}", userId);
-        return itemService.getAllItemsByOwnerId(userId);
+        return itemService.getAllItemsByOwnerId(userId, from, size);
     }
 
     // /items/search?text={text} - Поиск вещи потенциальным арендатором.
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestHeader ("X-Sharer-User-Id") Long userId,
-                                     @RequestParam("text") String text) {
+                                     @RequestParam("text") String text,
+                                     @RequestParam(value = "from", required = false, defaultValue = "0")
+                                     final Integer from,
+                                     @RequestParam(value = "size", required = false, defaultValue = "10")
+                                     final Integer size) {
+
+        if (from < 0 || size < 0) {
+            throw new BadRequestException("Значение from и size не могут быть меньше 0");
+        }
+
         log.info("Поиск вещи потенциальным арендатором: {}", text);
         if (text.isBlank()) {
             return Collections.emptyList();
         } else {
-            return itemService.searchItems(userId, text);
+            return itemService.searchItems(userId, text, from, size);
         }
     }
 
