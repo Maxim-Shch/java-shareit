@@ -143,7 +143,6 @@ public class UserControllerTest {
     void getUserById() throws Exception {
         int userIndex = 0;
         when(userService.getUserById(anyLong())).thenReturn(usersDto.get(userIndex));
-
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(usersDto.get(userIndex).getId()), Long.class))
