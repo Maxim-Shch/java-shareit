@@ -267,4 +267,9 @@ public class ItemControllerTest {
 
         verify(commentService, never()).addNewComment(any(CommentShortDto.class), anyLong(), anyLong());
     }
+
+    @Test
+    public void testXSharerUserIdConstant() {
+        assertEquals("X-Sharer-User-Id", Constants.X_SHARER_USER_ID);
+    }
 }
