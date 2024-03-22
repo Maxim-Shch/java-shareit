@@ -176,7 +176,10 @@ public class ItemServiceImplTest {
     void testGetItemByIdWithWrongItem() {
         when(itemRepository.findById(100L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> itemService.getItemById(100L, 1L));
+        Exception e = new NotFoundException("Объект не найден");
+
+        assertThrows(e.getClass(), () -> itemService.getItemById(100L, 1L));
+        assertEquals("Объект не найден", e.getMessage());
 
         verify(itemRepository).findById(100L);
     }
