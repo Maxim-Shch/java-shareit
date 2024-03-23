@@ -15,7 +15,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.request.service.Constants;
+import ru.practicum.shareit.common.Constants;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -266,10 +266,5 @@ public class ItemControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(commentService, never()).addNewComment(any(CommentShortDto.class), anyLong(), anyLong());
-    }
-
-    @Test
-    public void testXSharerUserIdConstant() {
-        assertEquals("X-Sharer-User-Id", Constants.X_SHARER_USER_ID);
     }
 }
