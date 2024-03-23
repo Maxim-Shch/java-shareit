@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.common.Constants;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,7 +52,7 @@ public class ItemControllerTest {
         when(itemService.addItem(anyLong(), any(ItemDto.class))).thenReturn(itemDto);
 
         mockMvc.perform(post("/items")
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -77,21 +76,21 @@ public class ItemControllerTest {
         when(itemService.addItem(anyLong(), any(ItemDto.class))).thenReturn(itemDto);
 
         mockMvc.perform(post("/items")
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDtoWithInvalidName))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post("/items")
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDtoWithInvalidDescription))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post("/items")
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDtoWithInvalidAvailable))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -107,7 +106,7 @@ public class ItemControllerTest {
                 .thenReturn(itemDto);
 
         mockMvc.perform(patch("/items/{itemId}", 1L)
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -127,7 +126,7 @@ public class ItemControllerTest {
                 .thenReturn(itemDto);
 
         mockMvc.perform(get("/items/{id}", 1L)
-                        .header(Constants.X_SHARER_USER_ID, 1))
+                        .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
@@ -142,7 +141,7 @@ public class ItemControllerTest {
                 .thenReturn(List.of(itemDto));
 
         mockMvc.perform(get("/items")
-                        .header(Constants.X_SHARER_USER_ID, 1))
+                        .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
@@ -163,7 +162,7 @@ public class ItemControllerTest {
         mockMvc.perform(get("/items")
                         .param("page", String.valueOf(invalidPage))
                         .param("size", String.valueOf(invalidSize))
-                        .header(Constants.X_SHARER_USER_ID, 1))
+                        .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isBadRequest());
 
         verify(itemService, never()).getAllItemsByOwnerId(anyLong(), eq(invalidPage), eq(invalidSize));
@@ -179,7 +178,7 @@ public class ItemControllerTest {
 
         mockMvc.perform(get("/items/search")
                         .param("text", "щетка")
-                        .header(Constants.X_SHARER_USER_ID, 1))
+                        .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(dtoForSearch.getId()), Long.class))
@@ -200,7 +199,7 @@ public class ItemControllerTest {
 
         mockMvc.perform(get("/items/search")
                         .param("text", "")
-                        .header(Constants.X_SHARER_USER_ID, 1))
+                        .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
@@ -238,7 +237,7 @@ public class ItemControllerTest {
                 .thenReturn(commentDto);
 
         mockMvc.perform(post("/items/{itemId}/comment", 1)
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(shortDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -259,7 +258,7 @@ public class ItemControllerTest {
                 .thenReturn(commentDto);
 
         mockMvc.perform(post("/items/{itemId}/comment", 1)
-                        .header(Constants.X_SHARER_USER_ID, 1)
+                        .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(shortInvalidDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
