@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class BookingDtoOut {
+
     private Long id;
     private LocalDateTime start; //дата и время начала бронирования;
     private LocalDateTime end; //дата и время конца бронирования;

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -28,4 +29,6 @@ public class ItemDto {
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
     private List<CommentShortDto> comments;
+    @Column(name = "request_id")
+    private Long requestId;
 }

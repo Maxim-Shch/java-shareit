@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -28,6 +29,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
 
@@ -40,6 +42,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .comments(commentsShortDto.isEmpty() ? Collections.emptyList() : commentsShortDto)
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
 
@@ -69,5 +72,9 @@ public class ItemMapper {
             }
         }
         return itemDto;
+    }
+
+    public static Set<ItemDto> toItemDtos(Set<Item> items) {
+        return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toSet());
     }
 }

@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
@@ -39,11 +41,11 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoOut createBooking(Long userId, BookingDtoIn bookingDtoIn) {
         validateBookingTime(bookingDtoIn.getStart(), bookingDtoIn.getEnd());
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = itemRepository.findById(bookingDtoIn.getItemId())
-                .orElseThrow(() -> new NotFoundException("Item not found"));
+                .orElseThrow(() -> new NotFoundException("Товар не найден"));
         if (!item.getAvailable()) {
-            throw new BookingValidationException("Item is not available for booking");
+            throw new BookingValidationException("Товар недоступен для бронирования");
         }
         if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Нелья сделать бронирование на собственную вещь");
@@ -75,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoOut getBooking(Long bookingId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
         Booking booking = bookingOptional.orElseThrow(() ->
                 new NotFoundException(String.format("Бронирование с id=%d не найдено", bookingId)));
@@ -87,26 +89,27 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDtoOut> getAllBookingsByUser(Long userId, String state) {
+    public Collection<BookingDtoOut> getAllBookingsByUser(Long userId, String state, Integer from, Integer size) {
         StateOfBookingRequest stateIn = getState(state);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден с id: " + userId));
-        List<Booking> userBookings = bookingRepository.findByBooker(user);
+        User user = userRepository.findById(userId).orElseThrow();
+
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
+        List<Booking> userBookings = bookingRepository.findByBooker(user, page);
         log.info("Список всех бронирований со статусом {} пользователя с id={} успешно получен", state, userId);
         return getBookingsByState(userBookings, stateIn)
                 .stream().map(BookingMapper::toBookingDtoOut).collect(Collectors.toList());
     }
 
     @Override
-    public Collection<BookingDtoOut> getBookingsForUserItems(Long userId, String state) {
+    public Collection<BookingDtoOut> getBookingsForUserItems(Long userId, String state, Integer from, Integer size) {
         StateOfBookingRequest stateIn = getState(state);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден с id: " + userId));
-        List<Booking> userBookings = bookingRepository.findByItem_Owner(user);
+        User user = userRepository.findById(userId).orElseThrow();
+
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
+        List<Booking> userBookings = bookingRepository.findByItem_Owner(user, page);
         log.info("Список бронирований со статусом {} для вещей пользователя с id={} успешно получен", state, userId);
-        return getBookingsByState(userBookings, stateIn).stream()
-                .map(BookingMapper::toBookingDtoOut)
-                .collect(Collectors.toList());
+        return getBookingsByState(userBookings, stateIn)
+                .stream().map(BookingMapper::toBookingDtoOut).collect(Collectors.toList());
     }
 
     private Collection<Booking> getBookingsByState(List<Booking> allBookings, StateOfBookingRequest state) {
