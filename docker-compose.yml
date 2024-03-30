@@ -9,6 +9,7 @@ services:
     depends_on:
       - server
     environment:
+      - TZ=Moscow/Europe
       - SHAREIT_SERVER_URL=http://server:9090
 
   server:

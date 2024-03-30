@@ -24,7 +24,7 @@
 
 	<modules>
 		<module>shareit-gateway</module>
-		<module>shareIt-server</module>
+		<module>shareit-server</module>
 	</modules>
 
 	<build>
@@ -187,17 +187,6 @@
 					</plugin>
 				</plugins>
 			</reporting>
-		</profile>
-		<profile>
-			<id>coverage</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 </project>
