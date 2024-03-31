@@ -77,6 +77,9 @@ public class ItemController {
     public ResponseEntity<Object> createItemComment(@RequestBody @Valid final CommentShortDto commentShortDto,
                                                     @PathVariable final Long itemId,
                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
+        if (commentShortDto.getText().isBlank()) {
+            throw new IllegalArgumentException("Текст комментария не может быть пустым");
+        }
         log.info("Пользователь с id={} добавил комментарий к вещи с id={}", userId, itemId);
         return itemClient.createItemComment(commentShortDto, itemId, userId);
     }

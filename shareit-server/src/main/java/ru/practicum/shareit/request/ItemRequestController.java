@@ -18,9 +18,6 @@ public class ItemRequestController {
     @PostMapping
     public ItemRequestDto createNewRequest(@RequestHeader("X-Sharer-User-Id") final Long userId,
                                            @RequestBody ItemRequestDto itemRequestDto) {
-        if (itemRequestDto.getDescription() == null || itemRequestDto.getDescription().isBlank()) {
-            throw new BadRequestException("Описание запроса не может быть пустым!");
-        }
         return requestService.addNewRequest(itemRequestDto, userId);
     }
 

@@ -39,7 +39,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDtoOut createBooking(Long userId, BookingDtoIn bookingDtoIn) {
-        validateBookingTime(bookingDtoIn.getStart(), bookingDtoIn.getEnd());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = itemRepository.findById(bookingDtoIn.getItemId())
@@ -141,12 +140,6 @@ public class BookingServiceImpl implements BookingService {
             return StateOfBookingRequest.valueOf(state);
         } catch (Throwable e) {
             throw new RequestException("Unknown state: " + state);
-        }
-    }
-
-    private void validateBookingTime(LocalDateTime start, LocalDateTime end) {
-        if (end.isBefore(start) || start.equals(end)) {
-            throw new BookingValidationException("Wrong booking time");
         }
     }
 }

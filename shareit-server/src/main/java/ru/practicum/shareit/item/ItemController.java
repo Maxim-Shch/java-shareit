@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.BadRequestException;
-import ru.practicum.shareit.exceptions.CommentRequestException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentShortDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -93,9 +92,6 @@ public class ItemController {
     public CommentDto createItemComment(@RequestBody final CommentShortDto commentShortDto,
                                         @PathVariable final Long itemId,
                                         @RequestHeader("X-Sharer-User-Id") Long userId) {
-        if (commentShortDto.getText().isBlank()) {
-            throw new CommentRequestException("Текст комментария не может быть пустым");
-        }
         return commentService.addNewComment(commentShortDto, itemId, userId);
     }
 }

@@ -24,6 +24,9 @@ public class ItemRequestController {
     @PostMapping
     public ResponseEntity<Object> createNewRequest(@RequestHeader("X-Sharer-User-Id") final Long userId,
                                                    @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        if (itemRequestDto.getDescription() == null || itemRequestDto.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Описание запроса не может быть пустым!");
+        }
         log.info("Создан новый запрос с описанием {}", itemRequestDto.getDescription());
         return requestClient.addNewRequest(userId, itemRequestDto);
     }

@@ -1,5 +1,7 @@
 package ru.practicum.shareit_gateway.booking.dto;
 
+import ru.practicum.shareit_gateway.error.BookingStateException;
+
 import java.util.Optional;
 
 public enum StateOfBookingRequest {
@@ -17,6 +19,6 @@ public enum StateOfBookingRequest {
                 return Optional.of(state);
             }
         }
-        return Optional.empty();
+        throw new BookingStateException("Unknown state: " + stringState);
     }
 }
