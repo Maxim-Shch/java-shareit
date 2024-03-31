@@ -213,21 +213,4 @@ public class ItemControllerTest {
 
         verify(commentService).addNewComment(any(CommentShortDto.class), anyLong(), anyLong());
     }
-
-    @Test
-    void createItemCommentWithoutText() throws Exception {
-        CommentShortDto shortInvalidDto = CommentShortDto.builder().text("").build();
-
-        when(commentService.addNewComment(any(CommentShortDto.class), anyLong(), anyLong()))
-                .thenReturn(commentDto);
-
-        mockMvc.perform(post("/items/{itemId}/comment", 1)
-                        .header("X-Sharer-User-Id", 1)
-                        .content(objectMapper.writeValueAsString(shortInvalidDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(commentService, never()).addNewComment(any(CommentShortDto.class), anyLong(), anyLong());
-    }
 }

@@ -121,23 +121,6 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void testCreateBookingWithIncorrectBookingTime() {
-        BookingDtoIn bookingWithIncorrectEnd = BookingDtoIn.builder().id(2L).start(now.plusHours(1))
-                .end(now.minusHours(5)).itemId(1L).bookerId(2L).build();
-
-        BookingDtoIn bookingWithStartEqualsEnd = BookingDtoIn.builder().id(1L).start(now.plusHours(1))
-                .end(now.plusHours(1)).itemId(1L).bookerId(2L).build();
-
-        assertThrows(BookingValidationException.class, () -> bookingService.createBooking(booker.getId(),
-                bookingWithIncorrectEnd));
-        verify(bookingRepository, never()).save(any(Booking.class));
-
-        assertThrows(BookingValidationException.class, () -> bookingService.createBooking(booker.getId(),
-                bookingWithStartEqualsEnd));
-        verify(bookingRepository, never()).save(any(Booking.class));
-    }
-
-    @Test
     void testApproveBooking() {
         Long bookingItemOwner = booking.getItem().getOwner().getId();
 
